@@ -1,19 +1,9 @@
-import MySQLService from './MySQLService.js';
 
-export default class CombinationService extends MySQLService {
-    constructor() {
-        super()
-        this.db = null;
+export default class CombinationService {
+    constructor(db) {
+        this.db = db;
     }
 
-    async connect() {
-        try {
-            this.db = new MySQLService();
-            await this.db.connect();
-        } catch (error) {
-            throw new Error('Internal server error while connecting to database');
-        }
-    }
 
     async generateLetterCombinations(numbers) {
         const rows = await this.db.query('SELECT value FROM letters ORDER BY id ASC');
