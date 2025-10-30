@@ -26,7 +26,7 @@ app.post('/', dataValidator, validate, async (req, res) => {
 
       return successResponse(res, { "id": item_id, "combination": combinations }, 'Combinations created successfully', 201);
    } catch (error) {
-      return errorResponse(res, 'Failed to create combinations', [{ message: error.message }], 500);
+      return errorResponse(res, 'Failed to create combinations', 500);
    }
 });
 

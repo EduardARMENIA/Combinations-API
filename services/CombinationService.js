@@ -69,23 +69,32 @@ export default class CombinationService {
 
 
     async saveCombinations(items, combinations) {
-        const itemResult = await this.db.query(
-            'INSERT INTO items (values_json) VALUES (?)',
-            [JSON.stringify(items)]
-        );
-        const itemId = itemResult.insertId;
+        try {
+            await this.db.connection.beginTransaction();
 
-        const combinationsResult = await this.db.query('INSERT INTO combinations (item_id, combination) VALUES (?, ?)',
-            [itemId, JSON.stringify(combinations)]
-        );
-        const combinationId = combinationsResult.insertId;
+            const itemResult = await this.db.query(
+                'INSERT INTO items (values_json) VALUES (?)',
+                [JSON.stringify(items)]
+            );
+            const itemId = itemResult.insertId;
 
-        return {
-            item_id: itemId,
-            combination_id: combinationId,
-            items,
-            combinations
-        };
+            const combinationsResult = await this.db.query('INSERT INTO combinations (item_id, combination) VALUES (?, ?)',
+                [itemId, JSON.stringify(combinations)]
+            );
+            const combinationId = combinationsResult.insertId;
+
+            await this.db.connection.commit();
+
+            return {
+                item_id: itemId,
+                combination_id: combinationId,
+                items,
+                combinations
+            };
+        } catch (error) {
+            await this.db.connection.rollback();
+            throw error;
+        }
 
     }
 }
